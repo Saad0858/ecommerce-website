@@ -41,7 +41,7 @@ $order_items = $items_result->fetch_all(MYSQLI_ASSOC);
     <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
-    <?php include 'header.php'; ?>
+    <?php include __DIR__ . "/../public/includes/header.php"; ?>
     
     <div class="container">
         <div class="breadcrumb">
@@ -118,6 +118,6 @@ $order_items = $items_result->fetch_all(MYSQLI_ASSOC);
         </div>
     </div>
     
-    <?php include 'footer.php'; ?>
+    <?php include __DIR__ . "/../public/includes/footer.php"; ?>
 </body>
 </html>

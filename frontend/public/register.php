@@ -9,18 +9,15 @@
 <body>
     <div class="container">
         <h1>Create Account</h1>
-        <form action="../../backend/register.php" method="POST">
-            <div class="form-group">
-                <label>Full Name</label>
-                <input type="text" name="name" required>
-            </div>
-            <div class="form-group">
-                <label>Email</label>
-                <input type="email" name="email" required>
-            </div>
-            <!-- Similar fields for phone, password, address -->
+        <form action="../../backend/register.php" method="post">
+            <input type="text" name="name" placeholder="Full Name" required>
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <input type="text" name="phone" placeholder="Phone">
+            <input type="text" name="address" placeholder="Address">
             <button type="submit">Register</button>
         </form>
+
         <p>Already have an account? <a href="login.php">Login</a></p>
     </div>
 </body>

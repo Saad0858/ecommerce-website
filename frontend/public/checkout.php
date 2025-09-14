@@ -50,7 +50,7 @@ if (isset($_GET['remove_promo'])) {
 <!DOCTYPE html>
 <html>
 <body>
-    <?php include 'header.php'; ?>
+    <?php include __DIR__ . "/../public/includes/header.php";; ?>
     
     <div class="container">
         <h1>Checkout</h1>
@@ -135,6 +135,6 @@ if (isset($_GET['remove_promo'])) {
         </div>
     </div>
     
-    <?php include 'footer.php'; ?>
+    <?php include __DIR__ . "/../public/includes/footer.php"; ?>
 </body>
 </html>

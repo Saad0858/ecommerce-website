@@ -72,3 +72,15 @@ ALTER TABLE users ADD COLUMN notify_promos BOOLEAN DEFAULT TRUE;
 -- Add promo_code_id to orders table
 ALTER TABLE orders ADD COLUMN promo_code_id INT NULL;
 ALTER TABLE orders ADD CONSTRAINT fk_promo_code FOREIGN KEY (promo_code_id) REFERENCES promo_codes(id);
+
+-- Add notification preferences to users table
+ALTER TABLE users ADD COLUMN notify_orders BOOLEAN DEFAULT TRUE;
+ALTER TABLE users ADD COLUMN notify_promos BOOLEAN DEFAULT TRUE;
+
+ALTER TABLE users
+  ADD COLUMN is_admin TINYINT(1) NOT NULL DEFAULT 0,
+  ADD COLUMN is_active TINYINT(1) NOT NULL DEFAULT 1;
+
+ALTER TABLE orders
+  ADD COLUMN order_number VARCHAR(64) NULL,
+  ADD COLUMN email VARCHAR(100) NULL;

@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 // Add role checking
 function require_admin() {
@@ -11,6 +13,11 @@ function require_admin() {
     if ($_SESSION['role'] !== 'admin') {
         $_SESSION['error'] = "Admin access required";
         header("Location: " . BASE_URL . "/account.php");
+        exit;
+    }
+
+    if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] != 1) {
+        header("Location: ../frontend/public/login.php");
         exit;
     }
 }

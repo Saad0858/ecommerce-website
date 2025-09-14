@@ -17,7 +17,7 @@ if ($product['stock'] > 10) {
 <!DOCTYPE html>
 <html>
 <body>
-    <?php include 'header.php'; ?>
+    <?php include __DIR__ . "/../public/includes/header.php"; ?>
     
     <div class="container">
         <div class="product-detail">
@@ -72,6 +72,6 @@ if ($product['stock'] > 10) {
         </div>
     </div>
     
-    <?php include 'footer.php'; ?>
+    <?php include __DIR__ . "/../public/includes/footer.php"; ?>
 </body>
 </html>

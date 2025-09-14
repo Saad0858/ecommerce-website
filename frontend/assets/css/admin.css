@@ -1,0 +1,31 @@
+body {
+  font-family: 'Inter', sans-serif;
+  background: #f4f6f9;
+}
+
+.admin-sidebar {
+  height: 100vh;
+  background: #343a40;
+  color: #fff;
+  padding: 20px;
+}
+
+.admin-sidebar a {
+  display: block;
+  color: #ddd;
+  padding: 10px 0;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.admin-sidebar a:hover {
+  color: #fff;
+}
+
+.admin-content {
+  padding: 20px;
+}
+
+.card {
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}

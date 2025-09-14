@@ -1,8 +1,13 @@
 <?php
+// backend/includes/config.php
+
+define("BASE_URL", "http://localhost/ECommerce_Project/frontend/public");
+define("FRONTEND_PATH", __DIR__ . "/../../frontend/");
+
 // Site configuration
 define('SITE_NAME', 'EyeStore');
 // Change this line
-define('BASE_URL', 'http://localhost:8000/frontend/public');
+// define('BASE_URL', 'http://localhost:8000/frontend/public');
 
 // Session management
 session_start();

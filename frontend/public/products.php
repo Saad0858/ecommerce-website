@@ -13,23 +13,26 @@ $products = get_products();
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    <?php include 'includes/header.php'; ?>
+    <?php include __DIR__ . "/../public/includes/header.php"; ?>
     
     <div class="container">
-        <h1>Our Collection</h1>
-        <div class="product-grid">
-            <?php foreach ($products as $product): ?>
-                <div class="product-card">
-                    <img src="images/products/<?= htmlspecialchars($product['image_url']) ?>" alt="<?= htmlspecialchars($product['name']) ?>">
-                    <h3><?= htmlspecialchars($product['name']) ?></h3>
-                    <p class="price">$<?= number_format($product['price'], 2) ?></p>
-                    <p><?= htmlspecialchars(substr($product['description'], 0, 100)) ?>...</p>
-                    <a href="product.php?id=<?= $product['id'] ?>" class="btn">View Details</a>
-                </div>
-            <?php endforeach; ?>
+    <div class="row">
+        <?php foreach ($products as $product): ?>
+        <div class="col-md-4 mb-4">
+            <div class="card product-card h-100">
+            <img src="<?= $product['image_url'] ?>" class="card-img-top" alt="<?= $product['name'] ?>">
+            <div class="card-body text-center">
+                <h5 class="card-title"><?= $product['name'] ?></h5>
+                <p class="card-text text-muted">$<?= number_format($product['price'], 2) ?></p>
+                <a href="cart.php?action=add&id=<?= $product['id'] ?>" class="btn btn-primary">Add to Cart</a>
+            </div>
+            </div>
         </div>
+        <?php endforeach; ?>
     </div>
+    </div>
+
     
-    <?php include 'includes/footer.php'; ?>
+    <?php include __DIR__ . "/../public/includes/footer.php"; ?>
 </body>
 </html>

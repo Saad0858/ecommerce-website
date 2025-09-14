@@ -40,8 +40,17 @@ try {
     }
     
     // Insert order
-    $stmt = $mysqli->prepare("INSERT INTO orders (user_id, total_amount, shipping_name, promo_code_id) VALUES (?, ?, ?, ?)");
-    $stmt->bind_param("idsi", $_SESSION['user_id'], $total, $full_name, $promo_code_id);
+    // before inserting order, create order number
+    $order_number = strtoupper(uniqid('ORD'));
+
+    // If user is logged-in, prefer stored email; else use provided order email field
+    $order_email = $_SESSION['user_email'] ?? $_POST['email'] ?? '';
+
+    // Use a prepared statement including order_number and email and promo_code_id
+    $stmt = $mysqli->prepare(
+    "INSERT INTO orders (user_id, total_amount, shipping_name, promo_code_id, order_number, email) VALUES (?, ?, ?, ?, ?, ?)"
+    );
+    $stmt->bind_param("idsiss", $_SESSION['user_id'], $total, $full_name, $promo_code_id, $order_number, $order_email);
     $stmt->execute();
     $order_id = $mysqli->insert_id;
 

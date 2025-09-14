@@ -47,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_preferences'])
     <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
-    <?php include 'header.php'; ?>
+    <?php include __DIR__ . "/../public/includes/header.php"; ?>
     
     <div class="container">
         <h1>Welcome, <?= htmlspecialchars($_SESSION['user_name']) ?></h1>
@@ -132,6 +132,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_preferences'])
         </div>
     </div>
     
-    <?php include 'footer.php'; ?>
+    <?php include __DIR__ . "/../public/includes/footer.php"; ?>
 </body>
 </html>

@@ -61,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
-    <?php include 'header.php'; ?>
+    <?php include __DIR__ . "/../public/includes/header.php"; ?>
     
     <div class="container">
         <div class="breadcrumb">
@@ -108,6 +108,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
     
-    <?php include 'footer.php'; ?>
+    <?php include __DIR__ . "/../public/includes/footer.php"; ?>
 </body>
 </html>

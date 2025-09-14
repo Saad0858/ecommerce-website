@@ -11,7 +11,7 @@ if (!$order) {
 <!DOCTYPE html>
 <html>
 <body>
-    <?php include 'header.php'; ?>
+    <?php include __DIR__ . "/../public/includes/header.php"; ?>
     
     <div class="container">
         <h1>Order Confirmed (#<?= $order['id'] ?>)</h1>

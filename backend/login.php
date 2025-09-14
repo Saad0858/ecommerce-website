@@ -22,20 +22,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($user = $result->fetch_assoc()) {
         if (password_verify($password, $user['password'])) {
             // Successful login
-            $_SESSION['user_id'] = $user['id'];
+            // set consistent session keys used across the app
+            $_SESSION['user_id']   = $user['id'];
             $_SESSION['user_name'] = $user['name'];
-            $_SESSION['user_role'] = $user['role'];
+            // unify to 'role' because auth_check() expects $_SESSION['role']
+            $_SESSION['role'] = $user['role'];
+            $_SESSION['is_admin']  = $user['is_admin'];
             
             // Regenerate session ID to prevent fixation
             session_regenerate_id(true);
             
-            // Redirect based on role
-            if ($user['role'] === 'admin') {
-                header("Location: " . BASE_URL . "/admin/dashboard.php");
+            if ($user['is_admin']) {
+                header("Location: ../admin/dashboard.php");
             } else {
-                header("Location: " . BASE_URL . "/account.php");
+                header("Location: ../frontend/public/account.php");
             }
             exit;
+
         }
     }
 
