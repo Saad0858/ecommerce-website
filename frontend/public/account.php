@@ -10,7 +10,7 @@ $stmt->execute();
 $result = $stmt->get_result();
 $user = $result->fetch_assoc();
 
-// Get user orders
+// Get user orders with current status
 $order_stmt = $mysqli->prepare("SELECT o.*, 
                               (SELECT COUNT(*) FROM order_items WHERE order_id = o.id) as item_count 
                               FROM orders o 
@@ -66,8 +66,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_preferences'])
                     <h3>Account Information</h3>
                     <p><strong>Name:</strong> <?= htmlspecialchars($user['name']) ?></p>
                     <p><strong>Email:</strong> <?= htmlspecialchars($user['email']) ?></p>
-                    <p><strong>Phone:</strong> <?= htmlspecialchars($user['phone']) ?></p>
-                    <p><strong>Address:</strong> <?= htmlspecialchars($user['address']) ?></p>
+                    <p><strong>Phone:</strong> <?= htmlspecialchars($user['phone'] ?? 'Not provided') ?></p>
+                    <p><strong>Address:</strong> <?= htmlspecialchars($user['address'] ?? 'Not provided') ?></p>
                     <p><strong>Account Type:</strong> <?= $user['role'] === 'admin' ? 'Administrator' : 'Customer' ?></p>
                     <a href="edit_profile.php" class="btn btn-sm">Edit Profile</a>
                     <a href="change_password.php" class="btn btn-sm">Change Password</a>
@@ -107,18 +107,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_preferences'])
                                             <p class="order-date"><?= date('F j, Y', strtotime($order['created_at'])) ?></p>
                                         </div>
                                         <div class="order-status <?= strtolower($order['status']) ?>">
-                                            <?= $order['status'] ?>
+                                            <?= ucfirst($order['status']) ?>
                                         </div>
                                     </div>
                                     
                                     <div class="order-details">
                                         <p><strong>Items:</strong> <?= $order['item_count'] ?></p>
-                                        <p><strong>Total:</strong> $<?= number_format($order['total_amount'], 2) ?></p>
+                                        <p><strong>Total:</strong> ₹<?= number_format($order['total_amount'], 2) ?></p>
                                     </div>
                                     
                                     <div class="order-actions">
                                         <a href="order_details.php?id=<?= $order['id'] ?>" class="btn btn-sm">View Details</a>
-                                        <a href="order_tracking.php?id=<?= $order['id'] ?>" class="btn btn-sm">Track Order</a>
+                                        <?php if ($order['status'] !== 'cancelled' && $order['status'] !== 'completed'): ?>
+                                            <a href="order_tracking.php?id=<?= $order['id'] ?>" class="btn btn-sm">Track Order</a>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                             <?php endforeach; ?>

@@ -14,31 +14,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    $stmt = $mysqli->prepare("SELECT id, name, email, password, role FROM users WHERE email = ?");
+    $stmt = $mysqli->prepare("SELECT id, name, email, password, role, is_admin FROM users WHERE email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $result = $stmt->get_result();
     
     if ($user = $result->fetch_assoc()) {
         if (password_verify($password, $user['password'])) {
-            // Successful login
-            // set consistent session keys used across the app
+            /* ----------  successful login  ---------- */
             $_SESSION['user_id']   = $user['id'];
             $_SESSION['user_name'] = $user['name'];
-            // unify to 'role' because auth_check() expects $_SESSION['role']
-            $_SESSION['role'] = $user['role'];
+            $_SESSION['role']      = $user['role'];   // <-- ADD THIS LINE
             $_SESSION['is_admin']  = $user['is_admin'];
-            
-            // Regenerate session ID to prevent fixation
+
             session_regenerate_id(true);
-            
-            if ($user['is_admin']) {
+
+            if ($user['is_admin'] == true) {
                 header("Location: ../admin/dashboard.php");
             } else {
                 header("Location: ../frontend/public/account.php");
             }
             exit;
-
         }
     }
 

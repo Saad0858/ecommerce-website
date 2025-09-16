@@ -1,7 +1,43 @@
 <?php
 require_once __DIR__ . '/../../backend/includes/config.php';
 require_once __DIR__ . '/../../backend/includes/auth_check.php';
-require_once __DIR__ . '/../../backend/includes/get_cart_items.php';
+require_once __DIR__ . '/../../backend/includes/db_connection.php'; // Add database connection
+
+// Get cart items without including the full get_cart_items.php
+$cart_items = [];
+$total = 0;
+
+if (!empty($_SESSION['cart'])) {
+    $product_ids = array_map('intval', array_keys($_SESSION['cart']));
+    
+    if (!empty($product_ids)) {
+        $placeholders = implode(',', array_fill(0, count($product_ids), '?'));
+        $sql = "SELECT id, name, price FROM products WHERE id IN ($placeholders)";
+        
+        $stmt = $mysqli->prepare($sql);
+        
+        // Bind parameters
+        $types = str_repeat('i', count($product_ids));
+        $stmt->bind_param($types, ...$product_ids);
+        $stmt->execute();
+        
+        $result = $stmt->get_result();
+        
+        while ($product = $result->fetch_assoc()) {
+            $quantity = (int)$_SESSION['cart'][$product['id']];
+            $subtotal = $product['price'] * $quantity;
+            $total += $subtotal;
+            
+            $cart_items[] = [
+                'id' => $product['id'],
+                'name' => $product['name'],
+                'price' => $product['price'],
+                'quantity' => $quantity,
+                'subtotal' => $subtotal
+            ];
+        }
+    }
+}
 
 if (empty($cart_items)) {
     header("Location: cart.php");
@@ -11,6 +47,7 @@ if (empty($cart_items)) {
 // Handle promo code application
 $promo_code = null;
 $discount = 0;
+$subtotal = $total;
 
 if (isset($_POST['apply_promo']) && !empty($_POST['promo_code'])) {
     $code = strtoupper(trim($_POST['promo_code']));
@@ -26,14 +63,14 @@ if (isset($_POST['apply_promo']) && !empty($_POST['promo_code'])) {
     
     if ($promo = $result->fetch_assoc()) {
         // Check minimum order amount
-        if ($total >= $promo['min_order_amount']) {
+        if ($subtotal >= $promo['min_order_amount']) {
             $promo_code = $promo;
-            $discount = $total * ($promo['discount_percent'] / 100);
-            $total = $total - $discount;
+            $discount = $subtotal * ($promo['discount_percent'] / 100);
+            $total = $subtotal - $discount;
             $_SESSION['promo_code'] = $promo['id'];
             $success_message = "Promo code applied successfully!";
         } else {
-            $error_message = "This promo code requires a minimum order of $" . number_format($promo['min_order_amount'], 2);
+            $error_message = "This promo code requires a minimum order of ₹" . number_format($promo['min_order_amount'], 2);
         }
     } else {
         $error_message = "Invalid or expired promo code";
@@ -48,11 +85,139 @@ if (isset($_GET['remove_promo'])) {
 }
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Checkout - <?= defined('SITE_NAME') ? SITE_NAME : 'E-Commerce Store' ?></title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        .checkout-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .order-summary, .checkout-form {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        .table th, .table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+        
+        .promo-form {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .promo-form input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .small-link {
+            font-size: 0.8rem;
+            color: #dc3545;
+            margin-left: 10px;
+            text-decoration: none;
+        }
+        
+        .small-link:hover {
+            text-decoration: underline;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        
+        .btn {
+            background-color: #4e73df;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn:hover {
+            background-color: #2e59d9;
+        }
+        
+        .btn-sm {
+            padding: 8px 15px;
+            font-size: 14px;
+        }
+        
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .payment-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        h1, h3 {
+            color: #2c3e50;
+        }
+    </style>
+</head>
 <body>
-    <?php include __DIR__ . "/../public/includes/header.php";; ?>
+    <?php include __DIR__ . "/../public/includes/header.php"; ?>
     
-    <div class="container">
+    <div class="checkout-container">
         <h1>Checkout</h1>
         
         <?php if (isset($success_message)): ?>
@@ -79,56 +244,78 @@ if (isset($_GET['remove_promo'])) {
                         <tr>
                             <td><?= htmlspecialchars($item['name']) ?></td>
                             <td><?= $item['quantity'] ?></td>
-                            <td>$<?= number_format($item['price'], 2) ?></td>
-                            <td>$<?= number_format($item['price'] * $item['quantity'], 2) ?></td>
+                            <td>₹<?= number_format($item['price'], 2) ?></td>
+                            <td>₹<?= number_format($item['subtotal'], 2) ?></td>
                         </tr>
                     <?php endforeach; ?>
+                    
                     <?php if ($promo_code): ?>
                         <tr>
                             <td colspan="3">Subtotal</td>
-                            <td>$<?= number_format($total + $discount, 2) ?></td>
+                            <td>₹<?= number_format($subtotal, 2) ?></td>
                         </tr>
                         <tr>
                             <td colspan="3">
                                 Discount (<?= $promo_code['code'] ?> - <?= $promo_code['discount_percent'] ?>%)
                                 <a href="?remove_promo=1" class="small-link">[Remove]</a>
                             </td>
-                            <td>-$<?= number_format($discount, 2) ?></td>
+                            <td>-₹<?= number_format($discount, 2) ?></td>
                         </tr>
                     <?php endif; ?>
+                    
                     <tr>
                         <td colspan="3"><strong>Total</strong></td>
-                        <td><strong>$<?= number_format($total, 2) ?></strong></td>
+                        <td><strong>₹<?= number_format($total, 2) ?></strong></td>
                     </tr>
                 </tbody>
             </table>
             
             <?php if (!$promo_code): ?>
                 <form method="POST" class="promo-form">
-                    <div class="form-group">
-                        <label>Promo Code:</label>
-                        <input type="text" name="promo_code" placeholder="Enter promo code">
-                        <button type="submit" name="apply_promo" class="btn btn-sm">Apply</button>
-                    </div>
+                    <input type="text" name="promo_code" placeholder="Enter promo code">
+                    <button type="submit" name="apply_promo" class="btn btn-sm">Apply</button>
                 </form>
             <?php endif; ?>
         </div>
         
         <div class="checkout-form">
             <form action="../../backend/submit_order.php" method="POST">
-                <!-- Shipping Information -->
+                <h3>Shipping Information</h3>
+
                 <div class="form-group">
                     <label>Full Name:</label>
                     <input type="text" name="full_name" required>
                 </div>
-                
-                <!-- Payment Details -->
-                <div class="payment-section">
-                    <h3>Payment Information</h3>
-                    <div id="card-element"></div>
-                    <button id="submit-payment" class="btn">Pay $<?= number_format($total, 2) ?></button>
+
+                <div class="form-group">
+                    <label>Email:</label>
+                    <input type="email" name="email" required>
                 </div>
-                <script src="https://js.stripe.com/v3/"></script>
+
+                <div class="form-group">
+                    <label>Address:</label>
+                    <input type="text" name="address" required>
+                </div>
+
+                <div class="form-group">
+                    <label>City:</label>
+                    <input type="text" name="city" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Postal Code:</label>
+                    <input type="text" name="postal_code" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Country:</label>
+                    <input type="text" name="country" required>
+                </div>
+
+                <button type="submit" class="btn">Place Order</button>
+            </form>
+        </div>
+
                 
                 <button type="submit" class="btn">Place Order</button>
             </form>

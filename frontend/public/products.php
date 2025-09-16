@@ -15,17 +15,38 @@ $products = get_products();
 <body>
     <?php include __DIR__ . "/../public/includes/header.php"; ?>
     
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="container">
+            <h1 class="display-4 fw-bold">Welcome to Our E-Commerce Store</h1>
+            <p class="lead">Discover amazing products at great prices</p>
+            <a href="<?= BASE_URL ?>/products.php" class="btn btn-primary btn-lg mt-3">
+                <i class="fas fa-shopping-bag me-2"></i>Shop Now
+            </a>
+        </div>
+    </div>
+
+    <!-- Featured Products -->
+    <div class="container">
+        <h2 class="section-title">Featured Products</h2>
+        
+        <div class="row">
+            
+        </div>
+    </div>
+
+
     <div class="container">
     <div class="row">
         <?php foreach ($products as $product): ?>
         <div class="col-md-4 mb-4">
-            <div class="card product-card h-100">
-            <img src="<?= $product['image_url'] ?>" class="card-img-top" alt="<?= $product['name'] ?>">
-            <div class="card-body text-center">
-                <h5 class="card-title"><?= $product['name'] ?></h5>
-                <p class="card-text text-muted">$<?= number_format($product['price'], 2) ?></p>
-                <a href="cart.php?action=add&id=<?= $product['id'] ?>" class="btn btn-primary">Add to Cart</a>
-            </div>
+            <div class="product-card">
+                <img src="<?= $product['image_url'] ?>" class="card-img-top" alt="<?= $product['name'] ?>">
+                <div class="product-body">
+                    <h3 class="product-title"><?= $product['name'] ?></h5>
+                    <p class="product-price">₹<?= number_format($product['price'], 2) ?></p>
+                    <a href="cart.php?action=add&id=<?= $product['id'] ?>" class="btn btn-primary">Add to Cart</a>
+                </div>
             </div>
         </div>
         <?php endforeach; ?>

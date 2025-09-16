@@ -1,23 +1,30 @@
 <?php
+// backend/includes/auth_check.php
+declare(strict_types=1);
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Add role checking
-function require_admin() {
+require_once __DIR__ . '/config.php';   // guarantees BASE_URL is defined
+
+function require_admin(): void
+{
     if (!isset($_SESSION['user_id'])) {
-        header("Location: " . BASE_URL . "/login.php");
-        exit;
-    }
-    
-    if ($_SESSION['role'] !== 'admin') {
-        $_SESSION['error'] = "Admin access required";
-        header("Location: " . BASE_URL . "/account.php");
+        header('Location: ' . BASE_URL . '/login.php');
         exit;
     }
 
-    if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] != 1) {
-        header("Location: ../frontend/public/login.php");
+    // case-insensitive role check
+    if (strcasecmp((string)($_SESSION['role'] ?? ''), 'admin') !== 0) {
+        $_SESSION['error'] = 'Admin access required';
+        header('Location: ' . BASE_URL . '/account.php');
+        exit;
+    }
+
+    // final gate
+    if (empty($_SESSION['is_admin'])) {
+        header('Location: ' . BASE_URL . '/login.php');
         exit;
     }
 }

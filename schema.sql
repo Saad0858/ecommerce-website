@@ -84,3 +84,10 @@ ALTER TABLE users
 ALTER TABLE orders
   ADD COLUMN order_number VARCHAR(64) NULL,
   ADD COLUMN email VARCHAR(100) NULL;
+
+ALTER TABLE orders
+ADD COLUMN shipping_name VARCHAR(255) AFTER user_id,
+ADD COLUMN address TEXT AFTER shipping_name,
+ADD COLUMN city VARCHAR(100) AFTER address,
+ADD COLUMN postal_code VARCHAR(20) AFTER city,
+ADD COLUMN country VARCHAR(100) AFTER postal_code;
