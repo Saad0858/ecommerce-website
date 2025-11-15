@@ -35,6 +35,17 @@ $salesReport = get_sales_report($startDate, $endDate);
         </ol>
     </nav>
 
+    <!-- Sub-navigation for reports -->
+    <div class="mb-4">
+        <a href="reports.php" class="btn btn-primary me-2">Sales Report</a>
+        <a href="reports_date_wise.php" class="btn btn-outline-primary me-2">Date Wise</a>
+        <a href="reports_day_wise.php" class="btn btn-outline-primary me-2">Day Wise</a>
+        <a href="reports_category_wise.php" class="btn btn-outline-primary me-2">Category Wise</a>
+        <a href="reports_product_wise.php" class="btn btn-outline-primary me-2">Product Wise</a>
+        <a href="reports_user_wise.php" class="btn btn-outline-primary me-2">User Wise</a>
+        <a href="reports_promo_code_wise.php" class="btn btn-outline-primary">Promo Code Wise</a>
+    </div>
+
     <!-- title bar -->
     <div class="d-flex align-items-center justify-content-between mb-4">
         <div>
